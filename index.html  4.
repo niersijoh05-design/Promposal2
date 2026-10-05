@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>En viktig fråga...</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ff758c, #ff7eb3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.container {
+    width: 90%;
+    max-width: 650px;
+    background: rgba(255,255,255,0.95);
+    padding: 45px 25px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    position: relative;
+}
+
+.heart {
+    font-size: 65px;
+    animation: heartbeat 1.2s infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+h1 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.question {
+    font-size: 24px;
+    margin: 30px 0;
+    font-weight: bold;
+}
+
+.buttons {
+    position: relative;
+    height: 100px;
+    margin-top: 20px;
+}
+
+button {
+    border: none;
+    padding: 16px 30px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#yes {
+    background: #35c759;
+    color: white;
+    position: relative;
+    z-index: 2;
+}
+
+#yes:hover {
+    transform: scale(1.1);
+}
+
+#no {
+    background: #ff3b30;
+    color: white;
+    position: absolute;
+    z-index: 3;
+}
+
+.message {
+    height: 30px;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #555;
+}
+
+.hidden {
+    display: none;
+}
+
+.success {
+    animation: success 0.6s ease;
+}
+
+@keyframes success {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -20px;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh) rotate(720deg);
+    }
+}
+
+.small {
+    color: #777;
+    font-size: 14px;
+    margin-top: 25px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container" id="main">
+
+    <div class="heart">❤️</div>
+
+    <h1>Hej [NAMN]!</h1>
+
+    <p>
+        Du har blivit utvald till ett mycket viktigt uppdrag.
+    </p>
+
+    <p>
+        Efter omfattande forskning, analyser och
+        totalt ovetenskapliga beräkningar...
+    </p>
+
+    <div class="question">
+        Vill du gå på sittningen med mig? 🥂
+    </div>
+
+    <div class="buttons">
+
+        <button id="yes" onclick="sayYes()">
+            JA ❤️
+        </button>
+
+        <button id="no">
+            NEJ 😢
+        </button>
+
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <div class="small">
+        *Det finns inget rättsligt stöd för att tacka nej.
+    </div>
+
+</div>
+
+
+<script>
+
+const noButton = document.getElementById("no");
+const message = document.getElementById("message");
+
+let attempts = 0;
+
+const messages = [
+    "Är du säker? 🤨",
+    "Försök igen.",
+    "Det där var inte rätt svar.",
+    "NEJ-knappen verkar inte fungera...",
+    "Hmm... konstigt.",
+    "Systemet rekommenderar JA.",
+    "Du kan sluta försöka nu 😂",
+    "Okej, sista chansen..."
+];
+
+function moveNoButton() {
+
+    attempts++;
+
+    message.textContent =
+        messages[Math.min(attempts - 1, messages.length - 1)];
+
+    const container = document.querySelector(".buttons");
+
+    const maxX = container.clientWidth - noButton.offsetWidth;
+    const maxY = container.clientHeight - noButton.offsetHeight;
+
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
+
+    noButton.style.left = x + "px";
+    noButton.style.top = y + "px";
+
+    // JA-knappen blir större
+    const yesButton = document.getElementById("yes");
+
+    yesButton.style.transform =
+        `scale(${1 + attempts * 0.08})`;
+}
+
+
+// Desktop
+noButton.addEventListener("mouseenter", moveNoButton);
+
+// Mobil
+noButton.addEventListener("touchstart", function(e) {
+    e.preventDefault();
+    moveNoButton();
+});
+
+
+// Om personen faktiskt lyckas klicka
+noButton.addEventListener("click", function() {
+    moveNoButton();
+});
+
+
+function sayYes() {
+
+    document.getElementById("main").innerHTML = `
+        <div class="success">
+
+            <div style="font-size:80px;">
+                🎉🥳❤️
+            </div>
+
+            <h1>YEEEEES!</h1>
+
+            <p style="font-size:24px;">
+                Då ses vi på sittningen!
+            </p>
+
+            <p style="font-size:20px;">
+                Jag visste att du skulle välja rätt. 😌
+            </p>
+
+            <div style="font-size:50px;">
+                🥂💃🕺
+            </div>
+
+        </div>
+    `;
+
+    createConfetti();
+}
+
+
+function createConfetti() {
+
+    for(let i = 0; i < 150; i++) {
+
+        const confetti = document.createElement("div");
+
+        confetti.classList.add("confetti");
+
+        confetti.style.left =
+            Math.random() * 100 + "vw";
+
+        confetti.style.animationDuration =
+            (Math.random() * 3 + 2) + "s";
+
+        confetti.style.backgroundColor =
+            ["#ff3b30","#35c759","#007aff","#ffcc00","#af52de"]
+            [Math.floor(Math.random() * 5)];
+
+        confetti.style.transform =
+            `rotate(${Math.random() * 360}deg)`;
+
+        document.body.appendChild(confetti);
+
+        setTimeout(() => {
+            confetti.remove();
+        }, 5000);
+    }
+}
+
+</script>
+
+</body>
+</html>
